@@ -13,7 +13,6 @@ export function App() {
   const { data: paginatedTransactions, ...paginatedTransactionsUtils } = usePaginatedTransactions()
   const { data: transactionsByEmployee, ...transactionsByEmployeeUtils } = useTransactionsByEmployee()
   const [isLoading, setIsLoading] = useState(false)
-  // const [employees, setEmployees] = useState<Employee[]>([EMPTY_EMPLOYEE])
 
   const transactions = useMemo(
     () => paginatedTransactions?.data ?? transactionsByEmployee ?? null,
@@ -23,6 +22,7 @@ export function App() {
   const loadAllTransactions = useCallback(async () => {
     // console.log(isLoading)
     transactionsByEmployeeUtils.invalidateData()
+
     await employeeUtils.fetchAll()
     setIsLoading(false)
 
@@ -65,11 +65,16 @@ export function App() {
             label: `${item.firstName} ${item.lastName}`,
           })}
           onChange={async (newValue) => {
+            // console.log(newValue)
             if (newValue === null) {
               return
             }
 
-            await loadTransactionsByEmployee(newValue.id)
+            if (newValue.id){
+              await loadTransactionsByEmployee(newValue.id)
+            } else {
+              await loadAllTransactions()
+            }
           }}
         />
 
